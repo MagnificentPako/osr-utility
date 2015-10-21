@@ -1,5 +1,7 @@
 package me.h3x0rz.osr;
 
+import me.h3x0rz.osr.lifegraph.LifeGraphElement;
+import me.h3x0rz.osr.lifegraph.LifeGraphParser;
 import me.h3x0rz.osr.replay.ReplayElement;
 import me.h3x0rz.osr.replay.ReplayParser;
 import me.h3x0rz.util.ByteOutput;
@@ -25,7 +27,7 @@ public class OSRData {
     private short greatestCombo;
     private byte perfect;
     private List<Mods> modsUsed;
-    private String lifeGraph;
+    private LifeGraphElement[] lifeGraph;
     private long timestamp;
     private int replayDataLength;
     private ReplayElement[] replay;
@@ -48,7 +50,7 @@ public class OSRData {
         this.greatestCombo = greatestCombo;
         this.perfect = perfect;
         this.modsUsed = Mods.getUsedMods(modsUsed);
-        this.lifeGraph = lifeGraph;
+        this.lifeGraph = LifeGraphParser.parse(lifeGraph);
         this.timestamp = timestamp;
         this.replayDataLength = replayDataLength;
         this.replay = ReplayParser.parse(LZMADeCompressor.decompress(compressedReplay));
@@ -115,7 +117,7 @@ public class OSRData {
         return modsUsed;
     }
 
-    public String getLifeGraph() {
+    public LifeGraphElement[] getLifeGraph() {
         return lifeGraph;
     }
 
@@ -147,7 +149,7 @@ public class OSRData {
         out.writeShort(this.greatestCombo);
         out.writeByte(this.perfect);
         out.writeInt(Mods.reverseMods(this.modsUsed));
-        out.writeString(this.lifeGraph);
+        out.writeString(LifeGraphParser.unparse(this.lifeGraph));
         out.writeLong(this.timestamp);
         out.writeInt(this.replayDataLength);
         out.writeByteArray(ReplayParser.unparse(this.replay));
